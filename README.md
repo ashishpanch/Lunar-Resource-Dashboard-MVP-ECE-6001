@@ -38,7 +38,7 @@ The server automatically tries to open your browser.
 
 **NASA Shortfall 5.1:** Locate, characterize, and map useful resources on the lunar surface.
 
-**Thesis:** Lunar explorers will buy LunaScan because it turns resource-sensing data into an easy-to-use map for selecting the best locations for further exploration.
+**Thesis:** Lunar explorers will buy LunaScan because it enables rapid and efficient classification of lunar resources.
 
 ## MVP test
 
