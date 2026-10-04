@@ -1,238 +1,128 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LunaScan | Lunar Resource Intelligence</title>
-  <meta name="description" content="LunaScan virtual MVP for lunar resource mapping and mission planning." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LunaScan | Interactive Lunar Globe</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="noise"></div>
+<header class="nav">
+  <div class="brand"><span class="mark"></span>LunaScan</div>
+  <nav><a href="#demo">Globe</a><a href="#analysis">Analysis</a><a href="#ip">NASA IP</a></nav>
+  <div class="status"><i></i>Interactive Demo</div>
+</header>
 
-  <header class="navbar">
-    <a class="brand" href="#">
-      <span class="brand-mark"></span>
-      <span>LunaScan</span>
-    </a>
-    <nav>
-      <a href="#mission">Mission</a>
-      <a href="#scanner">Scanner</a>
-      <a href="#shortlist">Shortlist</a>
-    </nav>
-    <span class="status"><i></i> Simulation Online</span>
-  </header>
+<main>
+<section class="hero">
+  <p class="eyebrow">NASA SHORTFALL 5.1 · VIRTUAL MVP</p>
+  <h1>Explore the Moon like a mission planner.</h1>
+  <p class="lead">Rotate, zoom, and inspect ten simulated resource survey sites across the near side, poles, and far side of the Moon.</p>
+  <div class="thesis"><span>THESIS</span><p>Lunar explorers will buy LunaScan because it enables rapid and efficient classification of lunar resources.</p></div>
+</section>
 
-  <main>
-    <section class="hero" id="mission">
-      <div class="hero-copy">
-        <p class="kicker">NASA SHORTFALL 5.1 · VIRTUAL MVP</p>
-        <h1>Find the next place worth exploring.</h1>
-        <p class="hero-text">
-          LunaScan turns simulated lunar resource-sensing data into an intuitive mission-planning interface
-          so exploration teams can compare regions, identify promising resource zones, and prioritize rover targets.
-        </p>
-        <div class="hero-actions">
-          <a class="btn primary" href="#scanner">Launch Scanner</a>
-          <button class="btn secondary" id="demoBtn">Run Guided Demo</button>
-        </div>
-        <div class="thesis">
-          <span>THESIS</span>
-          <p>Lunar explorers will buy LunaScan because it turns resource-sensing data into an easy-to-use map for selecting the best locations for further exploration.</p>
+<section class="section" id="demo">
+  <div class="section-head">
+    <div><p class="eyebrow">INTERACTIVE GLOBE</p><h2>Mission Explorer</h2></div>
+    <p>Drag to rotate the Moon. Use the mouse wheel to zoom. Click a glowing marker to inspect a survey location.</p>
+  </div>
+
+  <div class="workspace">
+    <section class="panel">
+      <div class="panel-head">
+        <div><span class="mini">LUNAR SURFACE</span><h3>Global Resource Survey</h3></div>
+        <div class="controls">
+          <button id="resetView">Reset</button>
+          <button id="autoRotate" class="active">Auto Rotate</button>
+          <button id="toggleLabels" class="active">Labels</button>
         </div>
       </div>
-
-      <div class="hero-visual">
-        <div class="orbit orbit-a"></div>
-        <div class="orbit orbit-b"></div>
-        <div class="moon-hero">
-          <div class="moon-shadow"></div>
-          <span class="hero-pin pin1"></span>
-          <span class="hero-pin pin2"></span>
-          <span class="hero-pin pin3"></span>
-        </div>
-        <div class="floating-card fc1">
-          <span>RESOURCE SIGNAL</span>
-          <strong>0.91</strong>
-          <small>High probability zone</small>
-        </div>
-        <div class="floating-card fc2">
-          <span>CONFIDENCE</span>
-          <strong>88%</strong>
-          <small>Simulated estimate</small>
-        </div>
+      <div class="globe-stage" id="globeStage">
+        <canvas id="moonCanvas"></canvas>
+        <div class="hint">Drag to rotate · wheel to zoom · click a marker</div>
       </div>
     </section>
 
-    <section class="section" id="scanner">
-      <div class="section-title">
-        <div>
-          <p class="kicker">MISSION WORKSPACE</p>
-          <h2>Lunar Resource Scanner</h2>
-        </div>
-        <p>Select a survey zone to inspect simulated resource potential and mission constraints.</p>
+    <aside class="panel inspector">
+      <div class="panel-head">
+        <div><span class="mini">ACTIVE INSPECTION</span><h3 id="siteName">Select a survey site</h3></div>
+        <span class="scan-state" id="scanState">IDLE</span>
       </div>
 
-      <div class="workspace">
-        <div class="panel map-panel">
-          <div class="panel-top">
-            <div>
-              <span class="label">LUNAR SOUTH POLAR REGION</span>
-              <strong>Survey Map</strong>
-            </div>
-            <div class="map-controls">
-              <button id="resetMap">Reset</button>
-              <button id="toggleHeat">Heatmap</button>
-            </div>
-          </div>
+      <div class="overview">
+        <div><span>Latitude</span><strong id="latVal">—</strong></div>
+        <div><span>Longitude</span><strong id="lonVal">—</strong></div>
+        <div><span>Potential</span><strong id="potentialVal">—</strong></div>
+        <div><span>Confidence</span><strong id="confidenceVal">—</strong></div>
+      </div>
 
-          <div class="lunar-map" id="lunarMap">
-            <div class="grid-lines"></div>
-            <div class="surface-texture"></div>
+      <div class="details">
+        <div><span>Terrain Risk</span><strong id="terrainVal">—</strong></div>
+        <div><span>Signal Quality</span><strong id="signalVal">—</strong></div>
+        <div class="wide"><span>Sample Interpretation</span><strong id="sampleVal">—</strong></div>
+      </div>
 
-            <div class="crater crater-1"></div>
-            <div class="crater crater-2"></div>
-            <div class="crater crater-3"></div>
-            <div class="crater crater-4"></div>
-            <div class="crater crater-5"></div>
+      <div class="insight"><span class="mini">MISSION INSIGHT</span><p id="insightVal">Rotate the Moon and choose one of the ten highlighted survey locations.</p></div>
 
-            <button class="zone z-a" data-zone="A">
-              <span>A</span>
-              <div class="zone-label">Shackleton Rim</div>
-            </button>
-            <button class="zone z-b" data-zone="B">
-              <span>B</span>
-              <div class="zone-label">Malapert Ridge</div>
-            </button>
-            <button class="zone z-c" data-zone="C">
-              <span>C</span>
-              <div class="zone-label">Shadow Basin</div>
-            </button>
-            <button class="zone z-d" data-zone="D">
-              <span>D</span>
-              <div class="zone-label">Polar Plain</div>
-            </button>
+      <div class="site-index">
+        <span class="mini">TEN SURVEY SITES</span>
+        <div id="siteButtons"></div>
+      </div>
 
-            <div class="map-legend">
-              <span><i class="lg high"></i> High</span>
-              <span><i class="lg med"></i> Medium</span>
-              <span><i class="lg low"></i> Low</span>
-            </div>
-          </div>
-        </div>
+      <button class="primary full" id="openAnalysis">Open Material Analysis</button>
+    </aside>
+  </div>
+</section>
 
-        <div class="panel data-panel">
-          <div class="panel-top">
-            <div>
-              <span class="label">ACTIVE SCAN</span>
-              <strong id="scanTitle">Select a survey zone</strong>
-            </div>
-            <span class="scan-state" id="scanState">IDLE</span>
-          </div>
+<section class="section" id="analysis">
+  <div class="section-head">
+    <div><p class="eyebrow">MATERIAL ANALYSIS</p><h2>THz Interpretation</h2></div>
+    <p>The measurement view is separated from LunaScan's mission-level interpretation.</p>
+  </div>
 
-          <div class="empty-scan" id="emptyScan">
-            <div class="radar">
-              <span></span><span></span><span></span>
-              <i></i>
-            </div>
-            <p>Choose a zone on the map to begin analysis.</p>
-          </div>
-
-          <div class="scan-content hidden" id="scanContent">
-            <div class="score-row">
-              <div>
-                <span class="label">RESOURCE POTENTIAL</span>
-                <strong class="big-score" id="resourceScore">0.00</strong>
-              </div>
-              <span class="rating" id="rating">HIGH</span>
-            </div>
-
-            <div class="metrics">
-              <div class="metric">
-                <span>Water-Ice Index</span>
-                <strong id="iceIndex">--</strong>
-                <small>relative signal</small>
-              </div>
-              <div class="metric">
-                <span>Confidence</span>
-                <strong id="confidence">--</strong>
-                <small>model estimate</small>
-              </div>
-              <div class="metric">
-                <span>Terrain Risk</span>
-                <strong id="terrainRisk">--</strong>
-                <small>mobility factor</small>
-              </div>
-              <div class="metric">
-                <span>Signal Quality</span>
-                <strong id="signalQuality">--</strong>
-                <small>sensor clarity</small>
-              </div>
-            </div>
-
-            <div class="chart-card">
-              <div class="chart-title">
-                <span>RESOURCE PROFILE</span>
-                <strong id="chartPercent">0%</strong>
-              </div>
-              <div class="bar-track"><div id="resourceBar"></div></div>
-              <div class="ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
-            </div>
-
-            <div class="insight">
-              <span class="label">MISSION INSIGHT</span>
-              <p id="insightText"></p>
-            </div>
-
-            <button class="btn primary full" id="shortlistBtn">Add to Mission Shortlist</button>
-          </div>
-        </div>
+  <div class="analysis-grid">
+    <section class="panel">
+      <div class="panel-head">
+        <div><span class="mini">NASA IP MEASUREMENT VIEW</span><h3 id="analysisSite">No site selected</h3></div>
+        <span class="scan-state live">SIMULATED</span>
+      </div>
+      <div class="analysis-strip">
+        <div><span>Frequency</span><strong>2.0–3.2 THz</strong></div>
+        <div><span>Environment</span><strong id="environmentVal">—</strong></div>
+        <div><span>Mode</span><strong>Material Characterization</strong></div>
+      </div>
+      <div class="spectrum-wrap"><canvas id="spectrumCanvas"></canvas></div>
+      <div class="properties">
+        <div><span>Conductivity</span><strong id="conductivityVal">—</strong></div>
+        <div><span>Thermal Inertia</span><strong id="thermalVal">—</strong></div>
+        <div><span>Surface Roughness</span><strong id="roughnessVal">—</strong></div>
+        <div><span>Porosity</span><strong id="porosityVal">—</strong></div>
       </div>
     </section>
 
-    <section class="section" id="shortlist">
-      <div class="section-title">
-        <div>
-          <p class="kicker">DECISION SUPPORT</p>
-          <h2>Mission Shortlist</h2>
-        </div>
-        <p>Compare the candidate sites you selected during the scan.</p>
+    <aside class="panel">
+      <div class="panel-head"><div><span class="mini">LUNASCAN INTERPRETATION</span><h3>Decision Support</h3></div></div>
+      <div class="big-result"><span>Water / Volatile Potential</span><strong id="analysisPotential">—</strong><small id="analysisConfidence">—</small></div>
+      <div class="split">
+        <div><span class="mini">NASA IP PROVIDES</span><ul><li>THz spectral response</li><li>Material-property characterization</li><li>Surface / subsurface context</li></ul></div>
+        <div><span class="mini">LUNASCAN ADDS</span><ul><li>Resource classification</li><li>Confidence summary</li><li>Mission recommendation</li></ul></div>
       </div>
+      <div class="insight"><span class="mini">RECOMMENDATION</span><p id="recommendationVal">Select a globe site to populate this panel.</p></div>
+    </aside>
+  </div>
+</section>
 
-      <div class="panel shortlist-panel">
-        <div id="shortlistEmpty" class="shortlist-empty">
-          <strong>No sites selected yet.</strong>
-          <span>Add survey zones from the scanner to compare them here.</span>
-        </div>
-        <div id="shortlistGrid" class="shortlist-grid"></div>
-      </div>
+<section class="section" id="ip">
+  <div class="panel ip-card">
+    <span class="tag">GSC-TOPS-369</span>
+    <h2>Quantum Cascade Laser Source and Transceiver</h2>
+    <p>LunaScan is conceptually based on NASA Goddard's GSC-TOPS-369 technology for high-resolution terahertz spectroscopy and planetary material characterization, including lunar water-resource mapping and analysis of properties such as conductivity, thermal inertia, surface roughness, and porosity.</p>
+    <a class="secondary link-btn" href="https://technology.nasa.gov/patent/GSC-TOPS-369" target="_blank" rel="noopener noreferrer">Official NASA IP page ↗</a>
+  </div>
+</section>
+</main>
 
-      <div class="test-panel">
-        <div>
-          <p class="kicker">MVP TEST</p>
-          <h3>Give this task to your interview participant</h3>
-        </div>
-        <blockquote>
-          “Imagine you are deciding where to send a rover to investigate lunar resources.
-          Use LunaScan to choose your first target. Tell us what information influenced your decision
-          and what information you wish you had.”
-        </blockquote>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div>
-      <strong>LunaScan</strong>
-      <span>Virtual concept MVP · Simulated data only</span>
-    </div>
-    <span>ECE 6001 · NASA Technology Transfer Project</span>
-  </footer>
-
-  <div class="toast" id="toast"></div>
-  <script src="app.js"></script>
+<footer><span>LunaScan MVP · simulated resource data</span><span>ECE 6001 NASA Technology Transfer Project</span></footer>
+<script src="app.js"></script>
 </body>
 </html>
